@@ -197,6 +197,8 @@ public class MenuPanel extends JPanel {
         btn.addActionListener(e -> {
             if (targetCard.equals("ATTENDANCE")) {
                 mainFrame.showCard(targetCard);
+            } else if (targetCard.equals("STOCK")) {
+                mainFrame.showCard(targetCard);
             } else {
                 JOptionPane.showMessageDialog(this, 
                     "Feature '" + title + "' is being built by another teammate!", 
