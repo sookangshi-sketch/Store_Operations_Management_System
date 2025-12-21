@@ -36,7 +36,7 @@ public class MainFrame extends JFrame {
         mainPanel.add(new LoginPanel(this), "LOGIN"); 
         mainPanel.add(new MenuPanel(this), "MENU");   
         mainPanel.add(new AttendancePanel(this), "ATTENDANCE"); 
-
+        mainPanel.add(new StockPanel(this), "STOCK");
         add(mainPanel);
         setVisible(true);
     }
