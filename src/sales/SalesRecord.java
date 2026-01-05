@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package sales;
 
 import core.CSVSerializable;
@@ -36,6 +32,7 @@ public class SalesRecord implements CSVSerializable {
     public String getModelName() { return modelName; }
     public double getTotal() { return total; }
     public String getEmployeeId() { return employeeId; }
+    public String getMethod() { return method; }
 
     @Override
     public String toCSV() {
@@ -61,5 +58,9 @@ public class SalesRecord implements CSVSerializable {
     @Override
     public String toString() {
         return String.format("%s | %s | %s | Qty: %d | RM%.2f", date, customerName, modelName, quantity, total);
+    }
+    
+    public int getQuantity() {
+        return quantity;
     }
 }

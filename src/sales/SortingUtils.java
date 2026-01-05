@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package sales;
 
 import java.util.Collections;
@@ -30,7 +26,19 @@ public class SortingUtils {
         Collections.sort(records, Comparator.comparing(SalesRecord::getDate));
     }
 
+    public static void sortByDateDesc(List<SalesRecord> records) {
+        Collections.sort(records, Comparator.comparing(SalesRecord::getDate).reversed());
+    }
+
     public static void sortByName(List<SalesRecord> records) {
         Collections.sort(records, Comparator.comparing(SalesRecord::getCustomerName));
+    }
+    
+    public static void sortByAmountAsc(List<SalesRecord> records) {
+        Collections.sort(records, Comparator.comparingDouble(SalesRecord::getTotal));
+    }
+
+    public static void sortByAmountDesc(List<SalesRecord> records) {
+        Collections.sort(records, Comparator.comparingDouble(SalesRecord::getTotal).reversed());
     }
 }
