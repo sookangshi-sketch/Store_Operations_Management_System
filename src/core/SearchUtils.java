@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package core;
 
 import java.util.ArrayList;
@@ -10,23 +6,27 @@ import sales.SalesRecord;
 
 public class SearchUtils {
 
-    // Linear Search for Product by Model Name
-    public static Product searchProduct(String modelName, List<Product> products) {
+    // 1. 优化：使用 contains 实现模糊搜索，且不区分大小写
+    public static Product searchProduct(String keyword, List<Product> products) {
+        if (keyword == null) return null;
+        String key = keyword.toLowerCase().trim();
+
         for (Product p : products) {
-            if (p.getModelName().equalsIgnoreCase(modelName)) {
+            // 只要 ID 或 名字 里包含这个词，就算找到
+            if (p.getModelName().toLowerCase().contains(key)) {
                 return p;
             }
         }
         return null;
     }
 
-    // Linear Search for Sales by keyword (Customer name or Model)
+    // 2. 销售记录搜索保持不变 (已经是 contains 了，很好)
     public static List<SalesRecord> searchSales(String keyword, List<SalesRecord> records) {
         List<SalesRecord> results = new ArrayList<>();
-        String key = keyword.toLowerCase();
+        String key = keyword.toLowerCase().trim();
         for (SalesRecord r : records) {
-            if (r.getCustomerName().toLowerCase().contains(key) || 
-                r.getModelName().toLowerCase().contains(key)) {
+            if (r.getCustomerName().toLowerCase().contains(key) ||
+                    r.getModelName().toLowerCase().contains(key)) {
                 results.add(r);
             }
         }

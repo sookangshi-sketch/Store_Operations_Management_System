@@ -24,6 +24,11 @@ public class Employee implements CSVSerializable {
     public String getRole() { return role; }
     public String getPassword() { return password; }
 
+    // 在 Employee.java 的 Getters 下面添加：
+    public void setName(String name) { this.name = name; }
+    public void setRole(String role) { this.role = role; }
+    public void setPassword(String password) { this.password = password; }
+
     public boolean checkPassword(String inputPass) {
         return this.password.equals(inputPass);
     }
