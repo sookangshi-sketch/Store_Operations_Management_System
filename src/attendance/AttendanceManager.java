@@ -31,7 +31,7 @@ public class AttendanceManager {
         
         // Calculate hours worked today
         double hours = calculateDailyHours(empId, date);
-        return String.format("Clock Out Successful at %s. Total Hours Today: %.1f", time, hours);
+        return String.format("Clock Out Successful at %s. Total Hours Worked: %.1f", time, hours);
     }
 
     private static double calculateDailyHours(String empId, String date) {
