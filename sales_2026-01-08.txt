@@ -1,0 +1,12 @@
+=== Record New Sale ===
+Date: 2026-01-08
+Time: 11:09 p.m.
+Outlet: C60
+Customer Name: aaa
+Item(s) Purchased:
+Model: DW2300-2
+Quantity: 1
+Unit Price: RM399.00
+Transaction Method: Cash
+Subtotal: RM399.00
+

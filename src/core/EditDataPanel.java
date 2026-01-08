@@ -1,7 +1,12 @@
+/*
+ * EditDataPanel.java (Updated with ComboBox for Payment Method)
+ */
 package core;
 
-import javax.swing.*;
 import java.awt.*;
+import java.util.List;
+import javax.swing.*;
+import sales.SalesRecord;
 
 public class EditDataPanel extends JPanel {
     // 模式选择
@@ -17,6 +22,13 @@ public class EditDataPanel extends JPanel {
     private JTextField empIdField, empNameField, empPassField;
     private JComboBox<String> empRoleCombo;
 
+    // Sales 控件 
+    private JTextField salesSearchField; 
+    private JTextField editCustField, editModelField, editQtyField, editTotalField;
+    // [New Feature] Changed from TextField to ComboBox
+    private JComboBox<String> editMethodBox; 
+    private SalesRecord currentEditingSale = null;
+
     public EditDataPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -24,17 +36,16 @@ public class EditDataPanel extends JPanel {
         // 1. 顶部：选择要编辑的类型
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(new JLabel("Editing Mode:"));
-        String[] modes = {"Edit Product Stock", "Edit Employee Info"};
+        String[] modes = {"Edit Product Stock", "Edit Employee Info", "Edit Sales Info"};
         modeCombo = new JComboBox<>(modes);
         topPanel.add(modeCombo);
         add(topPanel, BorderLayout.NORTH);
 
         // 2. 中间：动态表单
         dynamicPanel = new JPanel(new CardLayout());
-
-        // 创建两个面板
         dynamicPanel.add(createProductPanel(), "Edit Product Stock");
         dynamicPanel.add(createEmployeePanel(), "Edit Employee Info");
+        dynamicPanel.add(createSalesPanel(), "Edit Sales Info"); 
 
         add(dynamicPanel, BorderLayout.CENTER);
 
@@ -75,16 +86,14 @@ public class EditDataPanel extends JPanel {
         JPanel p = new JPanel(new GridLayout(5, 2, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Employee Info Management"));
 
-        empIdField = new JTextField(); // 用来搜索
+        empIdField = new JTextField();
         empNameField = new JTextField();
         empPassField = new JTextField();
         String[] roles = {"Manager", "Full-time", "Part-time"};
         empRoleCombo = new JComboBox<>(roles);
-
         JButton findBtn = new JButton("Find & Load");
         JButton saveBtn = new JButton("Save Changes");
 
-        // 布局有点紧凑，第一行放搜索
         JPanel searchRow = new JPanel(new BorderLayout());
         searchRow.add(empIdField, BorderLayout.CENTER);
         searchRow.add(findBtn, BorderLayout.EAST);
@@ -100,18 +109,53 @@ public class EditDataPanel extends JPanel {
         return p;
     }
 
-    // Logic: Update Product
+    // --- C. 销售记录编辑面板 ---
+    private JPanel createSalesPanel() {
+        JPanel p = new JPanel(new GridLayout(7, 2, 5, 5));
+        p.setBorder(BorderFactory.createTitledBorder("Sales Record Management"));
+
+        salesSearchField = new JTextField();
+        JButton searchBtn = new JButton("Find Last Sale");
+        
+        editCustField = new JTextField();
+        editModelField = new JTextField();
+        editQtyField = new JTextField();
+        editTotalField = new JTextField();
+        
+        // [New Feature] Initialize ComboBox instead of TextField
+        editMethodBox = new JComboBox<>(new String[]{"Cash", "Debit/Credit Card", "E-wallet", "Other"});
+        
+        JButton saveSaleBtn = new JButton("Update Sale Record");
+
+        JPanel searchBox = new JPanel(new BorderLayout());
+        searchBox.add(salesSearchField, BorderLayout.CENTER);
+        searchBox.add(searchBtn, BorderLayout.EAST);
+
+        p.add(new JLabel("Search Customer Name:")); p.add(searchBox);
+        p.add(new JLabel("Customer Name:")); p.add(editCustField);
+        p.add(new JLabel("Model:")); p.add(editModelField);
+        p.add(new JLabel("Quantity:")); p.add(editQtyField);
+        p.add(new JLabel("Total Price:")); p.add(editTotalField);
+        p.add(new JLabel("Method:")); p.add(editMethodBox); // Add Box
+        p.add(new JLabel("")); p.add(saveSaleBtn);
+
+        searchBtn.addActionListener(e -> loadSales());
+        saveSaleBtn.addActionListener(e -> saveSales());
+
+        return p;
+    }
+
+    // --- Logic Methods ---
+
     private void updateProductStock() {
         String model = prodModelField.getText().trim();
         String outlet = (String) outletCombo.getSelectedItem();
-
         Product p = SearchUtils.searchProduct(model, Database.getInstance().getProducts());
 
         if (p == null) {
             logArea.append("❌ Product '" + model + "' not found.\n");
             return;
         }
-
         try {
             int newQty = Integer.parseInt(stockField.getText().trim());
             p.setStock(outlet, newQty);
@@ -122,20 +166,16 @@ public class EditDataPanel extends JPanel {
         }
     }
 
-    // Logic: Load Employee
-    private Employee currentEditingEmp = null; // 临时存一下正在编辑谁
-
+    private Employee currentEditingEmp = null;
     private void loadEmployee() {
         String id = empIdField.getText().trim();
-        currentEditingEmp = null; // reset
-
+        currentEditingEmp = null;
         for (Employee e : Database.getInstance().getEmployees()) {
             if (e.getId().equalsIgnoreCase(id)) {
                 currentEditingEmp = e;
                 break;
             }
         }
-
         if (currentEditingEmp != null) {
             empNameField.setText(currentEditingEmp.getName());
             empPassField.setText(currentEditingEmp.getPassword());
@@ -143,24 +183,75 @@ public class EditDataPanel extends JPanel {
             logArea.append("🔎 Loaded Employee: " + currentEditingEmp.getName() + "\n");
         } else {
             logArea.append("❌ Employee ID '" + id + "' not found.\n");
-            empNameField.setText("");
-            empPassField.setText("");
         }
     }
 
-    // Logic: Save Employee
     private void saveEmployee() {
-        if (currentEditingEmp == null) {
-            logArea.append("⚠️ Please find an employee first.\n");
-            return;
-        }
-
-        // 使用我们在步骤1里加的 Setter
+        if (currentEditingEmp == null) return;
         currentEditingEmp.setName(empNameField.getText().trim());
         currentEditingEmp.setRole((String) empRoleCombo.getSelectedItem());
         currentEditingEmp.setPassword(empPassField.getText().trim());
-
         Database.getInstance().saveEmployees();
-        logArea.append("✅ Employee " + currentEditingEmp.getId() + " updated successfully!\n");
+        logArea.append("✅ Employee updated successfully!\n");
+    }
+
+    // --- Sales Logic ---
+    private void loadSales() {
+        String custName = salesSearchField.getText().trim();
+        List<SalesRecord> sales = Database.getInstance().getSalesLog();
+        currentEditingSale = null;
+
+        for (int i = sales.size() - 1; i >= 0; i--) {
+            if (sales.get(i).getCustomerName().equalsIgnoreCase(custName)) {
+                currentEditingSale = sales.get(i);
+                break;
+            }
+        }
+
+        if (currentEditingSale != null) {
+            editCustField.setText(currentEditingSale.getCustomerName());
+            editModelField.setText(currentEditingSale.getModelName());
+            editQtyField.setText(String.valueOf(currentEditingSale.getQuantity()));
+            editTotalField.setText(String.valueOf(currentEditingSale.getTotal()));
+            
+            // [New Feature] Set Selected Item in ComboBox
+            editMethodBox.setSelectedItem(currentEditingSale.getMethod());
+            
+            logArea.append("🔎 Loaded Sale for: " + custName + "\n");
+        } else {
+            logArea.append("❌ No sales found for customer: " + custName + "\n");
+        }
+    }
+
+    private void saveSales() {
+        if (currentEditingSale == null) return;
+        
+        try {
+            // [New Feature] Get value from ComboBox
+            String newMethod = (String) editMethodBox.getSelectedItem();
+
+            SalesRecord newRecord = new SalesRecord(
+                currentEditingSale.getDate(),
+                currentEditingSale.getTime(),
+                currentEditingSale.getEmployeeId(),
+                editCustField.getText(),
+                editModelField.getText(),
+                Integer.parseInt(editQtyField.getText()),
+                Double.parseDouble(editTotalField.getText()),
+                newMethod // Use the new method
+            );
+            
+            List<SalesRecord> list = Database.getInstance().getSalesLog();
+            int index = list.indexOf(currentEditingSale);
+            if(index != -1) {
+                list.set(index, newRecord);
+                Database.getInstance().saveSales();
+                logArea.append("✅ Sales record updated!\n");
+                currentEditingSale = newRecord; 
+            }
+
+        } catch (Exception e) {
+            logArea.append("❌ Error updating sale: " + e.getMessage() + "\n");
+        }
     }
 }
