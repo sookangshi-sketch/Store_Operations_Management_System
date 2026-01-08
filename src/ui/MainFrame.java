@@ -120,7 +120,7 @@ public class MainFrame extends JFrame {
         
         if (choice == JOptionPane.YES_OPTION) {
             // 这里填写实际需要的邮箱
-            EmailService.sendDailyReport("23001812@siswa.um.edu.my"); 
+            EmailService.sendDailyReport("24231773@siswa.um.edu.my"); 
         }
 
         currentUser = null;

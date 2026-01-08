@@ -1,0 +1,10 @@
+{
+    "java.project.source_level": "21",
+    "java.project.referencedLibraries": [
+        "c:\\Users\\User\\Downloads\\javax.activation-1.2.0.jar",
+        "c:\\Users\\User\\Downloads\\javax.mail-1.6.2.jar"
+    ],
+    "java.project.sourcePaths": [
+        "src"
+    ]
+}

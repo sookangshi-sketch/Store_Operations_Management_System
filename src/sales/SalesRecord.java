@@ -28,11 +28,13 @@ public class SalesRecord implements CSVSerializable {
 
     // Getters
     public String getDate() { return date; }
+    public String getTime() { return time; } // <--- 之前就是缺了这一行！
     public String getCustomerName() { return customerName; }
     public String getModelName() { return modelName; }
     public double getTotal() { return total; }
     public String getEmployeeId() { return employeeId; }
     public String getMethod() { return method; }
+    public int getQuantity() { return quantity; }
 
     @Override
     public String toCSV() {
@@ -58,9 +60,5 @@ public class SalesRecord implements CSVSerializable {
     @Override
     public String toString() {
         return String.format("%s | %s | %s | Qty: %d | RM%.2f", date, customerName, modelName, quantity, total);
-    }
-    
-    public int getQuantity() {
-        return quantity;
     }
 }
