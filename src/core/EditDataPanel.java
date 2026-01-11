@@ -9,31 +9,31 @@ import javax.swing.*;
 import sales.SalesRecord;
 
 public class EditDataPanel extends JPanel {
-    // 模式选择
+    // Mode selection
     private JComboBox<String> modeCombo;
     private JPanel dynamicPanel;
     private JTextArea logArea;
 
-    // Product 控件
+    // Product controls
     private JTextField prodModelField, stockField;
     private JComboBox<String> outletCombo;
 
-    // Employee 控件
+    // Employee controls
     private JTextField empIdField, empNameField, empPassField;
     private JComboBox<String> empRoleCombo;
 
-    // Sales 控件 
-    private JTextField salesSearchField; 
+    // Sales controls
+    private JTextField salesSearchField;
     private JTextField editCustField, editModelField, editQtyField, editTotalField;
     // [New Feature] Changed from TextField to ComboBox
-    private JComboBox<String> editMethodBox; 
+    private JComboBox<String> editMethodBox;
     private SalesRecord currentEditingSale = null;
 
     public EditDataPanel() {
         setLayout(new BorderLayout(10, 10));
         setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        // 1. 顶部：选择要编辑的类型
+        // 1. Top: Select the type to edit
         JPanel topPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         topPanel.add(new JLabel("Editing Mode:"));
         String[] modes = {"Edit Product Stock", "Edit Employee Info", "Edit Sales Info"};
@@ -41,27 +41,27 @@ public class EditDataPanel extends JPanel {
         topPanel.add(modeCombo);
         add(topPanel, BorderLayout.NORTH);
 
-        // 2. 中间：动态表单
+        // 2. Middle: Dynamic Form
         dynamicPanel = new JPanel(new CardLayout());
         dynamicPanel.add(createProductPanel(), "Edit Product Stock");
         dynamicPanel.add(createEmployeePanel(), "Edit Employee Info");
-        dynamicPanel.add(createSalesPanel(), "Edit Sales Info"); 
+        dynamicPanel.add(createSalesPanel(), "Edit Sales Info");
 
         add(dynamicPanel, BorderLayout.CENTER);
 
-        // 3. 底部：日志
+        // 3. Bottom: Log
         logArea = new JTextArea(5, 40);
         logArea.setEditable(false);
         add(new JScrollPane(logArea), BorderLayout.SOUTH);
 
-        // 监听模式切换
+        // Switching between monitoring modes
         modeCombo.addActionListener(e -> {
             CardLayout cl = (CardLayout) dynamicPanel.getLayout();
             cl.show(dynamicPanel, (String) modeCombo.getSelectedItem());
         });
     }
 
-    // --- A. 产品编辑面板 ---
+    // --- A. Product editing panel ---
     private JPanel createProductPanel() {
         JPanel p = new JPanel(new GridLayout(5, 2, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Product Stock Management"));
@@ -81,7 +81,7 @@ public class EditDataPanel extends JPanel {
         return p;
     }
 
-    // --- B. 员工编辑面板 ---
+    // --- B. Employee editing panel ---
     private JPanel createEmployeePanel() {
         JPanel p = new JPanel(new GridLayout(5, 2, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Employee Info Management"));
@@ -109,22 +109,22 @@ public class EditDataPanel extends JPanel {
         return p;
     }
 
-    // --- C. 销售记录编辑面板 ---
+    // --- C. Sales record editing panel ---
     private JPanel createSalesPanel() {
         JPanel p = new JPanel(new GridLayout(7, 2, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("Sales Record Management"));
 
         salesSearchField = new JTextField();
         JButton searchBtn = new JButton("Find Last Sale");
-        
+
         editCustField = new JTextField();
         editModelField = new JTextField();
         editQtyField = new JTextField();
         editTotalField = new JTextField();
-        
+
         // [New Feature] Initialize ComboBox instead of TextField
         editMethodBox = new JComboBox<>(new String[]{"Cash", "Debit/Credit Card", "E-wallet", "Other"});
-        
+
         JButton saveSaleBtn = new JButton("Update Sale Record");
 
         JPanel searchBox = new JPanel(new BorderLayout());
@@ -213,10 +213,10 @@ public class EditDataPanel extends JPanel {
             editModelField.setText(currentEditingSale.getModelName());
             editQtyField.setText(String.valueOf(currentEditingSale.getQuantity()));
             editTotalField.setText(String.valueOf(currentEditingSale.getTotal()));
-            
+
             // [New Feature] Set Selected Item in ComboBox
             editMethodBox.setSelectedItem(currentEditingSale.getMethod());
-            
+
             logArea.append("🔎 Loaded Sale for: " + custName + "\n");
         } else {
             logArea.append("❌ No sales found for customer: " + custName + "\n");
@@ -225,7 +225,7 @@ public class EditDataPanel extends JPanel {
 
     private void saveSales() {
         if (currentEditingSale == null) return;
-        
+
         try {
             // [New Feature] Get value from ComboBox
             String newMethod = (String) editMethodBox.getSelectedItem();
@@ -240,14 +240,14 @@ public class EditDataPanel extends JPanel {
                 Double.parseDouble(editTotalField.getText()),
                 newMethod // Use the new method
             );
-            
+
             List<SalesRecord> list = Database.getInstance().getSalesLog();
             int index = list.indexOf(currentEditingSale);
             if(index != -1) {
                 list.set(index, newRecord);
                 Database.getInstance().saveSales();
                 logArea.append("✅ Sales record updated!\n");
-                currentEditingSale = newRecord; 
+                currentEditingSale = newRecord;
             }
 
         } catch (Exception e) {
